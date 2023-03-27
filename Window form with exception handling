@@ -1,0 +1,82 @@
+Public Class Form1
+    Private Sub txtMultiLine_SelectedIndexChanged(sender As Object, e As EventArgs)
+
+    End Sub
+
+    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+    End Sub
+    Public Sub New()
+
+        ' This call is required by the designer.
+        InitializeComponent()
+
+        ' Add any initialization after the InitializeComponent() call.
+        cmbMaxLen.Items.Clear()
+        cmbMaxLen.Items.Add("5")
+        cmbMaxLen.Items.Add("10")
+        cmbMaxLen.Items.Add("15")
+        cmbMaxLen.Items.Add("20")
+        AddHandler cmbMaxLen.SelectedIndexChanged, AddressOf Me.ChangeLen
+        txtMixed.MaxLength = txtUpper.MaxLength
+        txtNumber.MaxLength = txtUpper.MaxLength
+        txtAlpha.MaxLength = txtUpper.MaxLength
+        txtAlpha.CharacterCasing = CharacterCasing.Lower
+        txtMixed.CharacterCasing = CharacterCasing.Upper
+        AddHandler txtAlpha.KeyPress, AddressOf Me.InputValidator
+        AddHandler txtNumber.KeyPress, AddressOf Me.InputValidator
+        AddHandler txtMixed.KeyPress, AddressOf Me.InputValidator
+
+        cmbMaxLen.SelectedIndex = 0
+        txtUpper.CharacterCasing = CharacterCasing.Upper
+        txtPassword.PasswordChar = "*"c
+        txtCentered.TextAlign = HorizontalAlignment.Center
+        txtMultiLine.Multiline = True
+        txtMultiLine.ScrollBars = ScrollBars.Vertical
+        txtMultiLine.WordWrap = True
+        txtMultiLine.AcceptsReturn = True
+        txtMultiLine.AcceptsTab = True
+        Me.AcceptButton = cmdCloseMe
+        AddHandler cmdCloseMe.Click, AddressOf Me.CloseMe
+    End Sub
+    Private Sub ChangeLen(ByVal sender As Object, ByVal e As EventArgs)
+        txtUpper.MaxLength = Convert.ToInt32(cmbMaxLen.Text)
+        txtPassword.MaxLength = txtUpper.MaxLength
+        txtCentered.MaxLength = txtUpper.MaxLength
+    End Sub
+    Private Sub CloseMe(ByVal sender As Object, ByVal e As EventArgs)
+        Me.Close()
+    End Sub
+
+    Private Sub InputValidator(ByVal sender As Object, ByVal e As KeyPressEventArgs)
+        Dim t As TextBox
+        If sender.GetType() Is GetType(TextBox) Then
+            t = CType(sender, TextBox)
+            If t.Name = txtAlpha.Name Then
+                'If it is not a letter then disallow the character
+                If (Not Char.IsLetter(e.KeyChar) And e.KeyChar <> Microsoft.VisualBasic.ChrW(8)) Then
+                    e.Handled = True
+                End If
+            End If
+            If t.Name = txtNumber.Name Then
+                'If it is not a letter then disallow the character
+                If (Not Char.IsNumber(e.KeyChar) And e.KeyChar <> Microsoft.VisualBasic.ChrW(8)) Then
+                    e.Handled = True
+                End If
+            End If
+            If t.Name = txtMixed.Name Then
+                'Allow only 0-9,A-F,<>?=
+                If (Char.IsNumber(e.KeyChar)) Then
+                    e.Handled = False
+                ElseIf (Char.ToUpper(e.KeyChar) >= "A"c And Char.ToUpper(e.KeyChar) <= "F"c) Then
+                    e.Handled = False
+                ElseIf (e.KeyChar = "<"c Or e.KeyChar = ">"c Or e.KeyChar = "?" Or e.KeyChar = "="c) Then
+                    e.Handled = False
+                Else
+                    e.Handled = True
+                End If
+            End If
+        End If
+    End Sub
+
+End Class
